@@ -10,16 +10,16 @@ It is designed to manage the complete firmware lifecycle — including versionin
 
 ## Key Features
 
-* Local OTA updates via device-hosted web interface
-* HTTP-based remote firmware updates
-* Dual-partition (A/B) firmware architecture
-* Automatic rollback on failure (power loss, crash, invalid firmware)
-* Post-boot validation mechanism
-* Firmware integrity verification (size + checksum)
-* Multi-device polling-based update system
-* Multi-MCU support (ESP32, ESP8266; extensible)
-* Staged rollout (canary deployment)
-* Update status reporting and centralized monitoring
+- Local OTA updates via device-hosted web interface
+- HTTP-based remote firmware updates
+- Dual-partition (A/B) firmware architecture
+- Automatic rollback on failure (power loss, crash, invalid firmware)
+- Post-boot validation mechanism
+- Firmware integrity verification (size + checksum)
+- Multi-device polling-based update system
+- Multi-MCU support (ESP32, ESP8266; extensible)
+- Staged rollout (canary deployment)
+- Update status reporting and centralized monitoring
 
 ---
 
@@ -27,11 +27,11 @@ It is designed to manage the complete firmware lifecycle — including versionin
 
 ### High-Level Architecture
 
-* Devices periodically poll the server for update decisions
-* Server responds with firmware metadata (version, URL, checksum)
-* Devices download firmware and perform OTA updates
-* Devices report update status back to the server
-* Rollout is controlled centrally using canary deployment strategy
+- Devices periodically poll the server for update decisions
+- Server responds with firmware metadata (version, URL, checksum)
+- Devices download firmware and perform OTA updates
+- Devices report update status back to the server
+- Rollout is controlled centrally using canary deployment strategy
 
 ---
 
@@ -39,12 +39,12 @@ It is designed to manage the complete firmware lifecycle — including versionin
 
 The device is structured into modular components:
 
-* **OTA State Machine** – Controls the OTA lifecycle
-* **OTA Manager** – Handles firmware installation and validation
-* **Network Manager** – Manages WiFi and HTTP communication
-* **Version Manager** – Tracks and compares firmware versions
-* **Flash Manager** – Handles A/B partition writes
-* **NVS Storage** – Stores persistent state (version, flags, status)
+- **OTA State Machine** – Controls the OTA lifecycle
+- **OTA Manager** – Handles firmware installation and validation
+- **Network Manager** – Manages WiFi and HTTP communication
+- **Version Manager** – Tracks and compares firmware versions
+- **Flash Manager** – Handles A/B partition writes
+- **NVS Storage** – Stores persistent state (version, flags, status)
 
 ---
 
@@ -74,9 +74,9 @@ POST-BOOT VALIDATION
 
 ### Dual Partition (A/B)
 
-* Firmware is written to an inactive partition
-* Current firmware remains untouched during update
-* Bootloader switches partitions only after successful installation
+- Firmware is written to an inactive partition
+- Current firmware remains untouched during update
+- Bootloader switches partitions only after successful installation
 
 ---
 
@@ -84,30 +84,30 @@ POST-BOOT VALIDATION
 
 The system handles the following failure scenarios:
 
-* **Power Loss During Update**
+- **Power Loss During Update**
   Active firmware remains intact
 
-* **Corrupted Firmware**
+- **Corrupted Firmware**
   Detected during verification, update aborted
 
-* **Runtime Failure (Crash / Watchdog Reset)**
+- **Runtime Failure (Crash / Watchdog Reset)**
   Firmware not validated → automatic rollback
 
 ---
 
 ## Post-Boot Validation
 
-After reboot, the new firmware enters a *pending verification state*.
+After reboot, the new firmware enters a _pending verification state_.
 
 The firmware must:
 
-* Initialize successfully
-* Complete basic runtime checks
-* Explicitly mark itself as valid
+- Initialize successfully
+- Complete basic runtime checks
+- Explicitly mark itself as valid
 
 If validation fails:
 
-* The system rolls back to the previous firmware
+- The system rolls back to the previous firmware
 
 ---
 
@@ -115,8 +115,8 @@ If validation fails:
 
 Before installation:
 
-* Firmware size is checked against partition size
-* Checksum verification ensures data integrity
+- Firmware size is checked against partition size
+- Checksum verification ensures data integrity
 
 ---
 
@@ -126,17 +126,17 @@ Flash memory is a non-volatile storage medium used in embedded systems to store 
 
 Unlike RAM, flash retains data even when power is removed. However, it has specific characteristics:
 
-* Data is written in blocks (not byte-wise freely)
-* Erase operations occur at sector level
-* Limited write/erase cycles (wear considerations)
-* Writes are slower than reads
+- Data is written in blocks (not byte-wise freely)
+- Erase operations occur at sector level
+- Limited write/erase cycles (wear considerations)
+- Writes are slower than reads
 
 In ESP32, flash memory stores:
 
-* Bootloader
-* Application firmware
-* OTA partitions
-* Persistent storage (NVS)
+- Bootloader
+- Application firmware
+- OTA partitions
+- Persistent storage (NVS)
 
 Understanding flash memory is essential for designing reliable OTA systems.
 
@@ -154,26 +154,26 @@ A typical ESP32 with 4MB flash uses a partition table to divide memory.
 
 ### Description
 
-* **Bootloader**
+- **Bootloader**
   Initializes system and selects which partition to boot
 
-* **Partition Table**
+- **Partition Table**
   Defines memory regions and sizes
 
-* **NVS (Non-Volatile Storage)**
+- **NVS (Non-Volatile Storage)**
   Stores configuration, flags, and OTA state
 
-* **OTA_0 / OTA_1 (A/B Partitions)**
+- **OTA_0 / OTA_1 (A/B Partitions)**
   Two firmware slots used for safe updates
 
 ---
 
 ### Key Concept: A/B Partitioning
 
-* Device runs firmware from one partition (e.g., OTA_0)
-* New firmware is written to inactive partition (OTA_1)
-* Bootloader switches only after success
-* On failure, system rolls back automatically
+- Device runs firmware from one partition (e.g., OTA_0)
+- New firmware is written to inactive partition (OTA_1)
+- Bootloader switches only after success
+- On failure, system rolls back automatically
 
 ---
 
@@ -183,8 +183,8 @@ Firmware must fit within a single OTA partition, not total flash.
 
 Example:
 
-* Total flash: 4MB
-* OTA partition: ~1.3MB
+- Total flash: 4MB
+- OTA partition: ~1.3MB
 
 👉 Firmware must be ≤ partition size
 
@@ -192,35 +192,33 @@ Example:
 
 ## Multi-Device Update Model
 
-* Devices periodically poll the server
+- Devices periodically poll the server
 
-* Each device sends:
+- Each device sends:
+  - Device ID
+  - Device type
+  - Current firmware version
 
-  * Device ID
-  * Device type
-  * Current firmware version
-
-* Server decides:
-
-  * Whether update is required
-  * Which firmware to provide
+- Server decides:
+  - Whether update is required
+  - Which firmware to provide
 
 ---
 
 ## Multi-MCU Support
 
-* Devices identify themselves using metadata
-* Server delivers firmware based on device type
-* Supports ESP32 and ESP8266 (extensible to other platforms)
+- Devices identify themselves using metadata
+- Server delivers firmware based on device type
+- Supports ESP32 and ESP8266 (extensible to other platforms)
 
 ---
 
 ## Staged Rollout (Canary Deployment)
 
-* Firmware is first deployed to a subset of devices
-* Devices report update success or failure
-* Server evaluates results
-* Full rollout occurs only after successful validation
+- Firmware is first deployed to a subset of devices
+- Devices report update success or failure
+- Server evaluates results
+- Full rollout occurs only after successful validation
 
 ---
 
@@ -274,21 +272,21 @@ HTTPS support and firmware authenticity verification.
 
 ## Future Scope
 
-* Secure boot integration
-* Firmware signing and verification
-* Delta firmware updates
-* MQTT-based update triggers
-* Centralized monitoring dashboard
+- Secure boot integration
+- Firmware signing and verification
+- Delta firmware updates
+- MQTT-based update triggers
+- Centralized monitoring dashboard
 
 ---
 
 ## Learning Outcomes
 
-* Embedded system reliability design
-* OTA firmware lifecycle management
-* Distributed system coordination
-* Backend + embedded system integration
-* Deployment and rollback strategies
+- Embedded system reliability design
+- OTA firmware lifecycle management
+- Distributed system coordination
+- Backend + embedded system integration
+- Deployment and rollback strategies
 
 ---
 
@@ -304,7 +302,9 @@ DFMS is designed as a firmware lifecycle management system rather than a basic O
 
 Embedded Systems | IoT | Systems Programming
 
-* Focus Areas: Embedded Systems, Networking, Firmware Design
-* Tech Stack: C/C++, ESP32, Arduino, Socket Programming, Git
+- Focus Areas: Embedded Systems, Networking, Firmware Design
+- Tech Stack: C/C++, ESP32, Arduino, Socket Programming, Git
 
 ---
+
+<img src="./Diagrams/OTA_update_flow.png" alt="Description" width="300" height="200" align="center">
