@@ -308,10 +308,3 @@ Embedded Systems | IoT | Systems Programming
 * Tech Stack: C/C++, ESP32, Arduino, Socket Programming, Git
 
 ---
-
-### Contact
-
-* GitHub: https://github.com/<your-username>
-* LinkedIn: https://linkedin.com/in/<your-profile>
-
----
